@@ -3,6 +3,7 @@
 # English
 
 A plugin based on Exiled for SCP:SL. This plugin allows player use command to switch SCP role.
+
 Note: Change to 096 and 079 requires at least 2 SCP players.
 
 Usage:
@@ -18,6 +19,7 @@ And you're now the role you request ~!
 # Chinese
 
 本插件基于 Exiled. 本插件允许你使用控制台指令自助切换SCP角色。
+
 备注：切换到096和079需要本回合至少存在2个SCP玩家。
 
 用法:
