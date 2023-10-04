@@ -1,6 +1,6 @@
 using System;
 using Exiled.API.Features;
-using Exiled.CustomRoles.Events;
+using RequestSCP.Commands;
 
 namespace RequestSCP
 {
@@ -14,8 +14,6 @@ namespace RequestSCP
 
         public static RequestSCP Instance;
 
-        public bool hasRequestedThisRound = false;
-
         public override void OnEnabled()
         {
             Instance = this;
@@ -23,16 +21,16 @@ namespace RequestSCP
             base.OnEnabled();
         }
 
-        public void OnRoundStarted()
-        {
-            hasRequestedThisRound = false;
-        }
-
         public override void OnDisabled()
         {
             Instance = null;
             Exiled.Events.Handlers.Server.RoundStarted -= OnRoundStarted;
             base.OnDisabled();
+        }
+
+        private void OnRoundStarted()
+        {
+            Request.ResetRequestStatus();
         }
     }
 }

@@ -5,18 +5,25 @@ using RemoteAdmin;
 using PlayerRoles;
 using System.Linq;
 using Exiled.API.Enums;
+using System.Collections.Generic;
 
 namespace RequestSCP.Commands
 {
     [CommandHandler(typeof(ClientCommandHandler))]
     public class Request : ICommand
     {
-        private static bool hasRequestedThisRound = false;
-        private static DateTime roundStartTime;
-
         public string Command => "request";
         public string Description => "申请成为指定的SCP / Request to be specific SCP.";
         public string[] Aliases => Array.Empty<string>();
+
+        private static HashSet<Player> requestedPlayers = new HashSet<Player>();
+        private static DateTime roundStartTime;
+
+        public static void ResetRequestStatus()
+        {
+            requestedPlayers.Clear();
+            roundStartTime = DateTime.Now;
+        }
 
         public bool HandleScpRoleChange(Player player, string roleCode, RoleTypeId targetRole, int requiredScps, out string response)
         {
@@ -27,7 +34,6 @@ namespace RequestSCP.Commands
             if (scpPlayers.Count > 0)
             {
                 response = $"本局游戏中已经存在一个{roleCode}了。 / There's already a {roleCode} in the game.";
-                hasRequestedThisRound = false;
                 return false;
             }
 
@@ -42,7 +48,6 @@ namespace RequestSCP.Commands
             else
             {
                 response = "条件未满足。 / Condition not fit.";
-                hasRequestedThisRound = false;
                 return false;
             }
         }
@@ -71,15 +76,23 @@ namespace RequestSCP.Commands
                 return false;
             }
 
-            if (hasRequestedThisRound || (DateTime.Now - roundStartTime).TotalSeconds < 180)
+            if (DateTime.Now - roundStartTime > TimeSpan.FromSeconds(180))
+            {
+                response = "游戏已经开始了超过3分钟，无法再进行请求。 / The game has been running for more than 3 minutes, you cannot request anymore.";
+                return false;
+            }
+
+            if (!requestedPlayers.Contains(player))
+            {
+                requestedPlayers.Add(player);
+                string roleName = argsArray[0];
+                return HandleScpRoleChange(player, roleName, GetTargetRole(roleName), GetRequiredScps(roleName), out response);
+            }
+            else
             {
                 response = "游戏内只能申请一次，并且在游戏开始后的3分钟内禁止申请。 / You can only request once in a round.And you cannot request after round start in 3 minutes.";
                 return false;
             }
-
-            string roleName = argsArray[0];
-            hasRequestedThisRound = true;
-            return HandleScpRoleChange(player, roleName, GetTargetRole(roleName), GetRequiredScps(roleName), out response);
         }
 
         private RoleTypeId GetTargetRole(string roleName)
