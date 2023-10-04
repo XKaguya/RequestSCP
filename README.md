@@ -8,7 +8,9 @@ Note: Change to 096 and 079 requires at least 2 SCP players.
 Usage:
 
 Step 1. Press ~
+
 Step 2. input command .request and role(106, 173, 939, 079, 049, 096).
+
 Step 3. Press Enter
 
 And you're now the role you request ~!
