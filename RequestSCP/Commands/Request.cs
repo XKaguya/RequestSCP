@@ -31,9 +31,17 @@ namespace RequestSCP.Commands
 
             var scpPlayers = Player.List.Where(p => p.Role.Side == Side.Scp && p.Role.Type == targetRole).ToList();
 
+            if ((targetRole == RoleTypeId.Scp096 || targetRole == RoleTypeId.Scp173) && scpPlayers.Count > 0 && Player.List.Count() < 12)
+            {
+                response = $"当前游戏中已经存在{roleCode}，并且游戏人数小于12人，无法申请成为{roleCode}。 / There's already a {roleCode} in the game, and the player count is less than 12, cannot request {roleCode}.";
+                Request.ResetRequestStatus();
+                return false;
+            }
+
             if (scpPlayers.Count > 0)
             {
                 response = $"本局游戏中已经存在一个{roleCode}了。 / There's already a {roleCode} in the game.";
+                Request.ResetRequestStatus();
                 return false;
             }
 
@@ -48,9 +56,11 @@ namespace RequestSCP.Commands
             else
             {
                 response = "条件未满足。 / Condition not fit.";
+                Request.ResetRequestStatus();
                 return false;
             }
         }
+
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
@@ -120,7 +130,7 @@ namespace RequestSCP.Commands
         {
             if (roleName == "096")
             {
-                return 2;
+                return 3;
             }
             else if (roleName == "079")
             {
